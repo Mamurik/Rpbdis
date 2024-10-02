@@ -78,15 +78,28 @@ namespace Rpbdis2
                 Console.ReadKey(); // Пауза перед возвратом к меню
             }
         }
-
         static void ShowAllArtists(DataOperations dataOperations)
         {
             Console.Clear();
-            Console.WriteLine(" Все исполнители:");
+            Console.WriteLine("Все исполнители:");
+
+            if (dataOperations == null)
+            {
+                Console.WriteLine("Ошибка: dataOperations не инициализирован.");
+                return;
+            }
+
             var artists = dataOperations.GetAllArtists();
+
+            if (artists == null)
+            {
+                Console.WriteLine("Ошибка: список исполнителей пуст.");
+                return;
+            }
+
             foreach (var artist in artists)
             {
-                Console.WriteLine($" ID: {artist.ArtistId}, Имя: {artist.Name}");
+                Console.WriteLine($"ID: {artist.ArtistId}, Имя: {artist.Name}");
             }
         }
 

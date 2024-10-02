@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Rpbdis2")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+29a3364d4b06d585c27e89e9222d3071cc838ecb")]
 [assembly: System.Reflection.AssemblyProductAttribute("Rpbdis2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Rpbdis2")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

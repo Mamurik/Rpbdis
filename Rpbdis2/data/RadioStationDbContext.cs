@@ -1,7 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using Rpbdis2.models;
+using System.IO;
+using System;
+using System.Collections.Generic;
+
+using System.IO;
 
 namespace Rpbdis2.data;
 
@@ -35,9 +42,27 @@ public partial class RadioStationDbContext : DbContext
     public virtual DbSet<VwMusicArchive> VwMusicArchives { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-V0G2JN0\\MSSQSRV;Database=RadioStationDB; Trusted_Connection =True; TrustServerCertificate=True");
+    {
+        ConfigurationBuilder builder = new();
 
+        ///Установка пути к текущему каталогу
+        builder.SetBasePath(Directory.GetCurrentDirectory());
+        // получаем конфигурацию из файла appsettings.json
+        builder.AddJsonFile("appsettings.json");
+        // создаем конфигурацию
+        IConfigurationRoot configuration = builder.AddUserSecrets<Program>().Build();
+
+        /// Получаем строку подключения
+        string connectionString = "";
+        //Вариант для локального SQL Server
+        connectionString = configuration.GetConnectionString("SQLConnection");
+        _ = optionsBuilder
+            .UseSqlServer(connectionString)
+            .Options;
+        optionsBuilder.LogTo(message => System.Diagnostics.Debug.WriteLine(message));
+
+
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Artist>(entity =>
@@ -146,7 +171,7 @@ public partial class RadioStationDbContext : DbContext
             entity
                 .HasNoKey()
                 .ToView("vw_Employees");
-
+            
             entity.Property(e => e.Education).HasMaxLength(100);
             entity.Property(e => e.EmployeeId).ValueGeneratedOnAdd();
             entity.Property(e => e.FullName).HasMaxLength(100);
