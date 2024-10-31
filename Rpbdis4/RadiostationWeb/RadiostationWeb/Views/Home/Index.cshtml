@@ -1,0 +1,100 @@
+﻿    @model RadiostationWeb.ViewModels.HomeViewModel
+    @{
+        ViewData["Title"] = "Информация о Радиостанции";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    <h2>ЗАПИСИ</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Имя Артиста</th>
+                <th>Название</th>
+                <th>Альбом</th>
+                <th>Год</th>
+                <th>Жанр</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Records != null && Model.Records.Any())
+            {
+                foreach (var record in Model.Records)
+                {
+                    <tr>
+                        <td>@record.Artist?.Name</td>
+                        <td>@record.Title</td>
+                        <td>@record.Album</td>
+                        <td>@record.Year</td>
+                        <td>@record.Genre?.Name</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5">Нет записей.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h2>Работники</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Имя Работника</th>
+                <th>Образование</th>
+                <th>Позиция</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Employees != null && Model.Employees.Any())
+            {
+                foreach (var employee in Model.Employees)
+                {
+                    <tr>
+                        <td>@employee.FullName</td>
+                        <td>@employee.Education</td>
+                        <td>@employee.Position</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3">Нет работников.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+<h2>Расписание</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Дата эфира</th>
+            <th>Имя Работника</th>
+            <th>Название Записи</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.BroadcastSchedules != null && Model.BroadcastSchedules.Any())
+        {
+            foreach (var broadcast in Model.BroadcastSchedules)
+            {
+                <tr>
+                    <td>@broadcast.BroadcastDate.ToShortDateString()</td>
+                    <td>@broadcast.Employee?.FullName </td>
+                    <td>@broadcast.Record?.Title </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">Нет расписаний.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

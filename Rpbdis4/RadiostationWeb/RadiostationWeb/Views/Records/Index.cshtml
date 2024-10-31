@@ -1,0 +1,33 @@
+﻿<h2>ЗАПИСИ</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Имя Артиста</th>
+            <th>Название</th>
+            <th>Альбом</th>
+            <th>Год</th>
+            <th>Жанр</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Records != null && Model.Records.Any())
+        {
+            foreach (var record in Model.Records)
+            {
+                <tr>
+                    <td>@record.Artist?.Name</td>
+                    <td>@record.Title</td>
+                    <td>@record.Album</td>
+                    <td>@record.Year</td>
+                    <td>@record.Genre?.Name</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">Нет записей.</td>
+            </tr>
+        }
+    </tbody>
+</table>

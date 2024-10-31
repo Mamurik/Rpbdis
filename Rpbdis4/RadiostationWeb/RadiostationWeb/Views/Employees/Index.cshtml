@@ -1,0 +1,29 @@
+﻿<h2>Работники</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Имя Работника</th>
+            <th>Образование</th>
+            <th>Позиция</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Employees != null && Model.Employees.Any())
+        {
+            foreach (var employee in Model.Employees)
+            {
+                <tr>
+                    <td>@employee.FullName</td>
+                    <td>@employee.Education</td>
+                    <td>@employee.Position</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">Нет работников.</td>
+            </tr>
+        }
+    </tbody>
+</table>
