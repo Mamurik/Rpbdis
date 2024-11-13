@@ -1,0 +1,191 @@
+﻿@model IEnumerable<RadiostationWeb.Models.BroadcastSchedule>
+@{
+    ViewData["Title"] = "Broadcast Schedules";
+}
+
+<div class="container">
+    <h2 class="my-3">Broadcast Schedules</h2>
+
+    <form method="get" asp-action="Index" class="mb-3">
+        <input type="hidden" name="sortOrder" value="@ViewBag.SortOrder" />
+
+        <!-- Фильтр по имени сотрудника -->
+        <label class="form-label">Search by Employee:</label>
+        <div class="input-group">
+            <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control" placeholder="Введите имя сотрудника..." />
+            <button type="submit" class="btn btn-outline-secondary">Search</button>
+        </div>
+
+        <div class="form-group">
+            <label for="recordName">Название записи</label>
+            <input type="text" class="form-control" id="recordName" name="recordName" value="@ViewBag.RecordName" placeholder="Поиск по названию записи">
+            <button type="submit" class="btn btn-outline-secondary">Search</button>
+        </div>
+
+        <!-- Фильтр по названию записи -->
+        <label class="form-label mt-3">Filter by Record Title:</label>
+        <div class="input-group">
+            <input type="text" name="recordTitle" value="@ViewBag.RecordTitle" class="form-control" placeholder="Введите название записи..." />
+            <button type="submit" class="btn btn-outline-secondary">Search</button>
+        </div>
+
+        <!-- Фильтр по дате -->
+        <label class="form-label mt-3">Filter by Broadcast Date:</label>
+        <div class="input-group mb-3">
+            <input type="date" name="startDate" value="@ViewBag.StartDate?.ToString("yyyy-MM-dd")" class="form-control" />
+            <input type="date" name="endDate" value="@ViewBag.EndDate?.ToString("yyyy-MM-dd")" class="form-control" />
+            <button type="submit" class="btn btn-outline-secondary">Filter</button>
+        </div>
+
+        @if (ViewBag.CurrentWeek == null || !(bool)ViewBag.CurrentWeek)
+        {
+            <button type="submit" class="btn btn-outline-danger" name="currentWeek" value="true">Show Current Week</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-outline-primary" name="currentWeek" value="false">Show All</button>
+        }
+    </form>
+
+
+
+    <!-- Кнопка для отображения формы создания -->
+    <button type="button" class="btn btn-outline-success mb-3" onclick="toggleCreateForm()">Add New Schedule</button>
+
+    <!-- Форма для создания нового расписания -->
+    <form asp-action="Create" method="post" id="createForm" class="mb-4 p-3 border rounded" style="display:none;">
+        <h5>Add New Broadcast Schedule</h5>
+        <div class="mb-3">
+            <label for="createEmployeeId" class="form-label">Employee:</label>
+            <select name="employeeId" id="createEmployeeId" class="form-control" required>
+                @foreach (var employee in ViewBag.Employees)
+                {
+                    <option value="@employee.EmployeeId">@employee.FullName</option>
+                }
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="createRecordId" class="form-label">Record:</label>
+            <select name="recordId" id="createRecordId" class="form-control" required>
+                @foreach (var record in ViewBag.Records)
+                {
+                    <option value="@record.RecordId">@record.Title</option>
+                }
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="createBroadcastDate" class="form-label">Broadcast Date:</label>
+            <input type="datetime-local" name="BroadcastDate" id="createBroadcastDate" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Create Schedule</button>
+    </form>
+
+    <!-- Форма для редактирования расписания -->
+    <form asp-action="Edit" method="post" id="editForm" class="mb-4 p-3 border rounded" style="display:none;">
+        <h5>Edit Broadcast Schedule</h5>
+        <input type="hidden" name="scheduleId" value="" />
+        <div class="mb-3">
+            <label for="editEmployeeId" class="form-label">Employee:</label>
+            <select name="employeeId" id="editEmployeeId" class="form-control" required>
+                @foreach (var employee in ViewBag.Employees)
+                {
+                    <option value="@employee.EmployeeId">@employee.FullName</option>
+                }
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="editRecordId" class="form-label">Record:</label>
+            <select name="recordId" id="editRecordId" class="form-control" required>
+                @foreach (var record in ViewBag.Records)
+                {
+                    <option value="@record.RecordId">@record.Title</option>
+                }
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="editBroadcastDate" class="form-label">Broadcast Date:</label>
+            <input type="datetime-local" name="BroadcastDate" id="editBroadcastDate" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Update Schedule</button>
+    </form>
+
+    <!-- Таблица расписания эфиров -->
+    <table class="table table-hover table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>
+                    <a asp-action="Index" asp-route-searchString="@ViewBag.SearchString" asp-route-sortField="Employee.FullName" asp-route-sortAsc="@(!ViewBag.SortAsc)">
+                        Employee @if (ViewBag.SortField == "Employee.FullName")
+                        {
+                            <span>@(ViewBag.SortAsc ? "▲" : "▼")</span>
+                        }
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-searchString="@ViewBag.SearchString" asp-route-sortField="BroadcastDate" asp-route-sortAsc="@(!ViewBag.SortAsc)">
+                        Schedule Time @if (ViewBag.SortField == "BroadcastDate")
+                        {
+                            <span>@(ViewBag.SortAsc ? "▲" : "▼")</span>
+                        }
+                    </a>
+                </th>
+                <th>Record</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+
+        <tbody>
+            @foreach (var schedule in Model)
+            {
+                <tr>
+                    <td>@schedule.Employee.FullName</td>
+                    <td>@schedule.BroadcastDate.ToString("g")</td>
+                    <td>@schedule.Record.Title</td>
+                    <td>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="editSchedule(@schedule.ScheduleId)">Edit</button>
+                        <a asp-action="Delete" asp-route-id="@schedule.ScheduleId" class="btn btn-outline-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Пагинация -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            @if (ViewBag.TotalRecords > ViewBag.PageSize)
+            {
+                int totalPages = (int)Math.Ceiling((double)ViewBag.TotalRecords / ViewBag.PageSize);
+                for (var i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                    </li>
+                }
+            }
+        </ul>
+    </nav>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleCreateForm() {
+            $('#createForm').toggle();
+            $('#editForm').hide();
+        }
+
+        function editSchedule(scheduleId) {
+            $.get('/BroadcastSchedules/Edit/' + scheduleId, function (data) {
+                $('input[name="scheduleId"]').val(data.scheduleId);
+                $('#editEmployeeId').val(data.employeeId);
+                $('#editRecordId').val(data.recordId);
+                $('#editBroadcastDate').val(data.BroadcastDate);
+
+                $('#createForm').hide();
+                $('#editForm').show();
+            });
+        }
+
+    </script>
+}

@@ -1,0 +1,25 @@
+﻿@model RadiostationWeb.Models.Genre
+
+@{
+    ViewData["Title"] = "Удалить жанр";
+}
+
+<h2>Удалить жанр</h2>
+
+<div>
+    <h4>Жанр</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Имя жанра</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+        <dt class="col-sm-2">Описание</dt>
+        <dd class="col-sm-10">@Model.Description</dd>
+    </dl>
+</div>
+
+<h4>Вы уверены, что хотите удалить этот жанр?</h4>
+<form asp-action="Delete" method="post">
+    <input type="hidden" name="id" value="@Model.GenreId" />
+    <button type="submit" class="btn btn-danger">Удалить</button>
+    <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+</form>

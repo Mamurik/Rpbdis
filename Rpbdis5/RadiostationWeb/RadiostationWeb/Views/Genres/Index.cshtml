@@ -1,0 +1,123 @@
+﻿@model IEnumerable<RadiostationWeb.Models.Genre>
+
+@{
+    ViewData["Title"] = "Жанры";
+}
+
+<div class="container">
+    <h2 class="my-3">Жанры</h2>
+
+    <button type="button" class="btn btn-outline-success mb-3" onclick="toggleCreateForm()">Создать новый жанр</button>
+
+    <form asp-action="Index" method="get" class="mb-3">
+        <div class="input-group mb-2">
+            <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control" placeholder="Введите название жанра..." />
+        </div>
+        <button class="btn btn-outline-secondary" type="submit">Фильтровать</button>
+    </form>
+
+    <form asp-action="Create" method="post" id="createForm" class="mb-4 p-3 border rounded" style="display: none;">
+        <h5>Создать новый жанр</h5>
+        <div class="mb-3">
+            <label for="createName" class="form-label">Название жанра:</label>
+            <input type="text" name="Name" id="createName" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label for="createDescription" class="form-label">Описание:</label>
+            <textarea name="Description" id="createDescription" class="form-control" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Создать</button>
+    </form>
+
+    <form asp-action="Edit" method="post" id="editForm" class="mb-4 p-3 border rounded" style="display: none;">
+        <h5>Редактировать жанр</h5>
+        <input type="hidden" name="GenreId" id="editGenreId" />
+        <div class="mb-3">
+            <label for="editName" class="form-label">Название жанра:</label>
+            <input type="text" name="Name" id="editName" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label for="editDescription" class="form-label">Описание:</label>
+            <textarea name="Description" id="editDescription" class="form-control" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Обновить</button>
+    </form>
+
+    <table class="table table-hover table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>
+                    <a asp-action="Index" asp-route-sortField="Name" asp-route-sortAsc="@(ViewBag.SortField == "Name" && !ViewBag.SortAsc)" asp-route-searchString="@ViewBag.SearchString">
+                        Название Жанра
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortField="Description" asp-route-sortAsc="@(ViewBag.SortField == "Description" && !ViewBag.SortAsc)" asp-route-searchString="@ViewBag.SearchString">
+                        Описание
+                    </a>
+                </th>
+
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var genre in Model)
+                {
+                    <tr id="genre-@genre.GenreId">
+                        <td>@genre.Name</td>
+                        <td>@genre.Description</td>
+                        <td>
+                            <button type="button" class="btn btn-outline-secondary" onclick="editGenre(@genre.GenreId)">Редактировать</button>
+                            <a asp-action="Delete" asp-route-id="@genre.GenreId" class="btn btn-outline-danger btn-sm">Удалить</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3">Нет жанров.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Пагинация -->
+    <nav>
+        <ul class="pagination justify-content-center">
+            @if (ViewBag.TotalRecords > 0)
+            {
+                int totalPages = (int)Math.Ceiling((double)ViewBag.TotalRecords / ViewBag.PageSize);
+
+                for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-searchString="@ViewBag.SearchString">@i</a>
+                    </li>
+                }
+            }
+        </ul>
+    </nav>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleCreateForm() {
+            $('#createForm').toggle();
+            $('#editForm').hide();
+        }
+
+        function editGenre(genreId) {
+            $.get('/Genres/Edit/' + genreId, function (data) {
+                $('#editGenreId').val(data.genreId);
+                $('#editName').val(data.name);
+                $('#editDescription').val(data.description);
+
+                $('#createForm').hide();
+                $('#editForm').show();
+            });
+        }
+    </script>
+}

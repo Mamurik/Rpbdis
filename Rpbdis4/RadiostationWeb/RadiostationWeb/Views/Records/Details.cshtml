@@ -1,0 +1,40 @@
+﻿@model RadiostationWeb.Models.Record
+
+@{
+    ViewData["Title"] = "Details - " + Model.Title;
+}
+
+<h1>@Model.Title</h1>
+
+<div>
+    <strong>Artist:</strong> @Model.Artist.Name
+</div>
+<div>
+    <strong>Album:</strong> @Model.Album
+</div>
+<div>
+    <strong>Year:</strong> @Model.Year
+</div>
+<div>
+    <strong>Genre:</strong> @Model.Genre.Name
+</div>
+
+@if (Model.RecordDetail != null)
+{
+    <h3>Record Details</h3>
+    <div>
+        <strong>Recording Date:</strong> @Model.RecordDetail.RecordingDate
+    </div>
+    <div>
+        <strong>Duration:</strong> @Model.RecordDetail.Duration
+    </div>
+    <div>
+        <strong>Rating:</strong> @Model.RecordDetail.Rating
+    </div>
+}
+else
+{
+    <p>No details available for this record.</p>
+}
+
+<a href="@Url.Action("Index", "Records")" class="btn btn-outline-secondary">Back to list</a>

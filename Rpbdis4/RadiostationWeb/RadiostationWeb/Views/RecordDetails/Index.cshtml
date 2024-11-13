@@ -1,0 +1,154 @@
+﻿@model IEnumerable<RadiostationWeb.Models.RecordDetail>
+@{
+    ViewData["Title"] = "Record Details";
+}
+
+<h2>Record Details</h2>
+
+<!-- Форма фильтрации -->
+<form method="get" asp-action="Index" class="mb-3">
+    <div class="form-group">
+        <label for="searchRecord">Filter by Record:</label>
+        <input type="text" name="searchRecord" id="searchRecord" value="@ViewBag.SearchRecord" class="form-control" placeholder="Введите название записи..." />
+    </div>
+    <input type="hidden" name="sortOrder" value="@ViewBag.SortOrder" />
+    <input type="hidden" name="sortBy" value="@ViewBag.SortBy" />
+    <button type="submit" class="btn btn-outline-secondary">Фильтровать</button>
+</form>
+
+<!-- Кнопка для открытия формы создания -->
+<button type="button" class="btn btn-outline-success mb-3" onclick="toggleCreateForm()">Добавить новую запись</button>
+
+<!-- Форма для создания новой записи -->
+<form asp-action="Create" method="post" id="createForm" style="display:none;">
+    <h3>Добавить новую запись</h3>
+    <div class="form-group">
+        <label for="createRecordId">Запись:</label>
+        <select name="recordId" id="createRecordId" class="form-control" required>
+            @foreach (var record in ViewBag.Records)
+            {
+                <option value="@record.RecordId">@record.Title</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="createRecordingDate">Дата записи:</label>
+        <input type="date" name="recordingDate" id="createRecordingDate" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="createDuration">Продолжительность:</label>
+        <input type="time" name="duration" id="createDuration" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="createRating">Рейтинг:</label>
+        <input type="number" name="rating" id="createRating" class="form-control" required min="1" max="5" />
+    </div>
+    <button type="submit" class="btn btn-outline-primary">Создать запись</button>
+</form>
+
+<!-- Форма для редактирования существующей записи -->
+<form asp-action="Edit" method="post" id="editForm" style="display:none;">
+    <h3>Редактировать запись</h3>
+    <input type="hidden" name="recordDetailId" value="" />
+    <div class="form-group">
+        <label for="editRecordId">Запись:</label>
+        <select name="recordId" id="editRecordId" class="form-control" required>
+            @foreach (var record in ViewBag.Records)
+            {
+                <option value="@record.RecordId">@record.Title</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="editRecordingDate">Дата записи:</label>
+        <input type="date" name="recordingDate" id="editRecordingDate" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="editDuration">Продолжительность:</label>
+        <input type="time" name="duration" id="editDuration" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="editRating">Рейтинг:</label>
+        <input type="number" name="rating" id="editRating" class="form-control" required min="1" max="5" />
+    </div>
+    <button type="submit" class="btn btn-outline-warning">Обновить запись</button>
+</form>
+
+<!-- Таблица данных -->
+<table class="table table-hover table-bordered align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-searchRecord="@ViewBag.SearchRecord" asp-route-sortOrder="@(ViewBag.SortOrder == "asc" && ViewBag.SortBy == "title" ? "desc" : "asc")" asp-route-sortBy="title">
+                    Запись @(ViewBag.SortOrder == "asc" && ViewBag.SortBy == "title" ? "▲" : "▼")
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-searchRecord="@ViewBag.SearchRecord" asp-route-sortOrder="@(ViewBag.SortOrder == "asc" && ViewBag.SortBy == "date" ? "desc" : "asc")" asp-route-sortBy="date">
+                    Дата записи @(ViewBag.SortOrder == "asc" && ViewBag.SortBy == "date" ? "▲" : "▼")
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-searchRecord="@ViewBag.SearchRecord" asp-route-sortOrder="@(ViewBag.SortOrder == "asc" && ViewBag.SortBy == "duration" ? "desc" : "asc")" asp-route-sortBy="duration">
+                    Продолжительность @(ViewBag.SortOrder == "asc" && ViewBag.SortBy == "duration" ? "▲" : "▼")
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-searchRecord="@ViewBag.SearchRecord" asp-route-sortOrder="@(ViewBag.SortOrder == "asc" && ViewBag.SortBy == "rating" ? "desc" : "asc")" asp-route-sortBy="rating">
+                    Рейтинг @(ViewBag.SortOrder == "asc" && ViewBag.SortBy == "rating" ? "▲" : "▼")
+                </a>
+            </th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var detail in Model)
+        {
+            <tr>
+                <td>@detail.Record.Title</td>
+                <td>@detail.RecordingDate.ToShortDateString()</td>
+                <td>@detail.Duration</td>
+                <td>@detail.Rating</td>
+                <td>
+                    <button type="button" class="btn btn-outline-secondary" onclick="editRecord(@detail.RecordDetailId)">Редактировать</button> |
+                    <a asp-action="Delete" asp-route-id="@detail.RecordDetailId" class="btn btn-outline-danger">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Пагинация -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-searchRecord="@ViewBag.SearchRecord" asp-route-sortOrder="@ViewBag.SortOrder" asp-route-sortBy="@ViewBag.SortBy">@i</a>
+            </li>
+        }
+    </ul>
+</nav>
+
+@section Scripts {
+    <script>
+        function toggleCreateForm() {
+            $('#createForm').toggle(); // Переключаем видимость формы создания
+            $('#editForm').hide(); // Скрываем форму редактирования, если она открыта
+        }
+
+        function editRecord(recordDetailId) {
+            $.get('/RecordDetails/Edit/' + recordDetailId, function (data) {
+                $('input[name="recordDetailId"]').val(data.recordDetailId);
+                $('#editRecordId').val(data.recordId);
+                $('#editRecordingDate').val(data.recordingDate);
+                $('#editDuration').val(data.duration);
+                $('#editRating').val(data.rating);
+
+                $('#createForm').hide(); // Скрываем форму создания
+                $('#editForm').show();    // Показываем форму редактирования
+            });
+        }
+    </script>
+}

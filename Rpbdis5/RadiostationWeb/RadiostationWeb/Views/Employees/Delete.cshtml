@@ -1,0 +1,30 @@
+﻿@model RadiostationWeb.Models.Employee
+
+@{
+    ViewData["Title"] = "Удалить работника";
+}
+
+<h2>Удалить работника</h2>
+
+<div>
+    <h4>Работник</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Имя</dt>
+        <dd class="col-sm-10">@Model.FullName</dd>
+        <dt class="col-sm-2">Образование</dt>
+        <dd class="col-sm-10">@Model.Education</dd>
+        <dt class="col-sm-2">Позиция</dt>
+        <dd class="col-sm-10">@Model.Position</dd>
+    </dl>
+
+    <h4>Вы уверены, что хотите удалить этого работника?</h4>
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="EmployeeId" />
+        <div class="form-group">
+            <input type="submit" value="Удалить" class="btn btn-danger" />
+            <a asp-action="Index" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+
+</div>
